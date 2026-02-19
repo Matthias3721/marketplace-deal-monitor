@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/dealmonitor}
+    username: ${SPRING_DATASOURCE_USERNAME:dealmonitor}
+    password: ${SPRING_DATASOURCE_PASSWORD:dealmonitor}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+app:
+  scheduler:
+    delay-ms: ${APP_SCHEDULER_DELAY_MS:60000}
+  marketplace:
+    mock: ${APP_MARKETPLACE_MOCK:true}
+
+jwt:
+  secret: ${JWT_SECRET:change-me}

@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dealmonitor}
+      POSTGRES_USER: ${POSTGRES_USER:-dealmonitor}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dealmonitor}
+    ports:
+      - "5432:5432"
+    volumes:
+      - dealmonitor_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dealmonitor} -d ${POSTGRES_DB:-dealmonitor}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: ./backend
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/dealmonitor}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-dealmonitor}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-dealmonitor}
+      APP_SCHEDULER_DELAY_MS: ${APP_SCHEDULER_DELAY_MS:-60000}
+      APP_MARKETPLACE_MOCK: ${APP_MARKETPLACE_MOCK:-true}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  dealmonitor_pg:
