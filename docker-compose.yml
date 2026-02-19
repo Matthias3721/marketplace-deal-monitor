@@ -1,12 +1,11 @@
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-dealmonitor}
       POSTGRES_USER: ${POSTGRES_USER:-dealmonitor}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dealmonitor}
-    ports:
-      - "5432:5432"
     volumes:
       - dealmonitor_pg:/var/lib/postgresql/data
     healthcheck:
@@ -18,6 +17,7 @@ services:
   app:
     build:
       context: ./backend
+    restart: unless-stopped
     environment:
       JWT_SECRET: ${JWT_SECRET}
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/dealmonitor}
@@ -28,7 +28,7 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       db:
         condition: service_healthy
